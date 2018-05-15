@@ -18,13 +18,14 @@ def extractor(src, rgb):
     dst = src.copy()
 
     possible_contours = [] 
-
+    roi = None
 
     for contour, hier in zip(contours, hierarchy):
         (x,y,w,h) = cv2.boundingRect(contour)
-        print "object aspect ratio: " + str(float(w/float(h)))
-        print "Width = "+str(w)+" Height = " +str(h)
-        print "X = "+str(x)+" Y = " +str(y)
+        # Extrair as metricas e buscar pela razao de aspecto
+        # print "object aspect ratio: " + str(float(w/float(h)))
+        # print "Width = "+str(w)+" Height = " +str(h)
+        # print "X = "+str(x)+" Y = " +str(y)
         try:
             area = cv2.contourArea(contour)
             hull = cv2.convexHull(contour)
@@ -39,8 +40,9 @@ def extractor(src, rgb):
         min_y, max_y = min(y, min_y), max(y+h, max_y)
         if w > 80 and h > 80:
             cv2.rectangle(dst, (x,y), (x+w,y+h), (255, 0, 0), 2)
+            roi = src[y:y+h, x:x+w]
             
-    print "Quantidade de ob = " + str(len(possible_contours))
+    # print "Quantidade de ob = " + str(len(possible_contours))
     # cv2.drawContours(dst2, contours, -1, (255, 0, 0), 2)
 
-    return dst, possible_contours
+    return dst, possible_contours, roi
