@@ -12,7 +12,6 @@ import sys
 import re
 import imgpreprocess as ipp
 import features
-import floodfill as ff
 
 if __name__ == '__main__':
     try:
@@ -49,25 +48,25 @@ if __name__ == '__main__':
         print "Error while reading diretoctory path."
     
     dirFiles = os.listdir(images_path)
+    
     ordered_files = sorted(dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
-
-    pos = 0
-    neg = 0
 
     for j in range (0,len(ordered_files) ):
 
         print images_path+ordered_files[j]
-        mat = cv2.imread(images_path+ordered_files[j])
+        src = cv2.imread(images_path+ordered_files[j])
+        mat = src.copy()
 
         gradient, crop_img, lines, line_edges = ipp.preprocess(mat)
-        img_bounded, contours, roi = features.extractor(gradient, mat)
+        img_bounded, contours, roi, rgb_bounded = features.extractor(gradient, src)
         # temp = np.vstack([np.hstack([img_bounded, crop_img])])
 
         # Segregation Mode
 
         if segregation:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
-            cv2.imshow('Depth', img_bounded)
+            cv2.imshow('Depth', rgb_bounded)
+            # cv2.imshow('Depth', rgb_bounded)
             key = cv2.waitKey(0)
 
             if key == 27:

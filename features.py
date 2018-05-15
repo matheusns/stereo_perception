@@ -19,6 +19,7 @@ def extractor(src, rgb):
 
     possible_contours = [] 
     roi = None
+    rgb_bounded = rgb.copy()
 
     for contour, hier in zip(contours, hierarchy):
         (x,y,w,h) = cv2.boundingRect(contour)
@@ -39,10 +40,13 @@ def extractor(src, rgb):
         min_x, max_x = min(x, min_x), max(x+w, max_x)
         min_y, max_y = min(y, min_y), max(y+h, max_y)
         if w > 80 and h > 80:
+            print "P = ("+str(y)+","+str(x)+")"
             cv2.rectangle(dst, (x,y), (x+w,y+h), (255, 0, 0), 2)
+            rgb_bounded = cv2.rectangle(rgb, (x+800,y+200), (x+800+w,y+200+h), (255, 0, 0), 2)
             roi = src[y:y+h, x:x+w]
+
             
     # print "Quantidade de ob = " + str(len(possible_contours))
     # cv2.drawContours(dst2, contours, -1, (255, 0, 0), 2)
 
-    return dst, possible_contours, roi
+    return dst, possible_contours, roi, rgb_bounded
