@@ -12,11 +12,13 @@ import sys
 import re
 import imgpreprocess as ipp
 import features
+import plot_features as plot
 
 if __name__ == '__main__':
     try:
         folder = sys.argv[1]
         images_path = "/home/matheus/Documents/"+folder+"/depth/"
+        normalized_path = "/home/matheus/Documents/"+folder+"/normalized/"
         segregation = sys.argv[2]
         anottation = sys.argv[3]
         detector_evaluate =  sys.argv[4]
@@ -46,35 +48,43 @@ if __name__ == '__main__':
             detector_evaluate = False
     except IndexError:
         print "Error while reading diretoctory path."
-    
+
     dirFiles = os.listdir(images_path)
-    
+    dirFiles_normalized = os.listdir(normalized_path)
+
     ordered_files = sorted(dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
+
+    area_vector_value = []
+    sample = []
+    cont_samples = 0
 
     for j in range (0,len(ordered_files) ):
 
         print images_path+ordered_files[j]
         src = cv2.imread(images_path+ordered_files[j])
+        normalized = cv2.imread(normalized_path+ordered_files[j])
         mat = src.copy()
 
         gradient, crop_img, lines, line_edges = ipp.preprocess(mat)
-        img_bounded, contours, roi, rgb_bounded = features.extractor(gradient, src)
+        img_bounded, contours, roi, rgb_bounded, contour_area = features.extractor(gradient, normalized)
         # temp = np.vstack([np.hstack([img_bounded, crop_img])])
 
         # Segregation Mode
 
-        if segregation:
+        if segregation and roi == None:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
-            cv2.imshow('Depth', rgb_bounded)
-            # cv2.imshow('Depth', rgb_bounded)
+            temp = np.vstack([np.hstack([img_bounded, crop_img])])
+            resized_image = cv2.resize(rgb_bounded, (1280, 720)) 
+            cv2.imshow('Depth', temp)
+            
             key = cv2.waitKey(0)
-
             if key == 27:
                 cv2.destroyAllWindows()
                 break
             elif key == 112:
                 cv2.imwrite("/home/matheus/Documents/"+folder+"/with_obst/"+ordered_files[j], mat)
             elif key == 119:
+                cv2.imwrite("/home/matheus/Documents/"+folder+"/knn_train_without/"+ordered_files[j], crop_img) # Must be roi_mat
                 cv2.imwrite("/home/matheus/Documents/"+folder+"/without_obst/"+ordered_files[j], mat)
 
         # Annotation Mode
@@ -84,16 +94,32 @@ if __name__ == '__main__':
             cv2.imshow('Depth', roi)
             key = cv2.waitKey(0)
 
+            # If 'esc' is pressed.
             if key == 27:
                 cv2.destroyAllWindows()
                 break
+            # If 'p' is pressed.
             elif key == 112:
-                cv2.imwrite("/home/matheus/Documents/"+folder+"/knn/"+ordered_files[j], mat) # Must be roi_mat
+                cont_samples+=1
+                sample.append(cont_samples)
+                area_vector_value.append(contour_area)
+                print "cont len = " + str(len(sample)) + "cont area = " + str(len(area_vector_value))
+                if cont_samples == 510:
+                    break
+                cv2.imwrite("/home/matheus/Documents/"+folder+"/knn_train/"+ordered_files[j], roi) # Must be roi_mat
+                cv2.imwrite("/home/matheus/Documents/"+folder+"/with_obst/"+ordered_files[j], mat) # Must be roi_mat
+            # If 'w' is pressed.
+            elif key == 119:
+                cv2.imwrite("/home/matheus/Documents/"+folder+"/knn_train_without/"+ordered_files[j], roi) # Must be roi_mat
+                cv2.imwrite("/home/matheus/Documents/"+folder+"/without_obst/"+ordered_files[j], mat) # Must be roi_mat
 
         # Detector Mode
 
         elif detector_evaluate:
             print "Building..."
+
+
+    plot.area(sample, area_vector_value)
 
     cv2.destroyAllWindows()
     
