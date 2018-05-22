@@ -20,6 +20,7 @@ def extractor(src, rgb):
     possible_contours = [] 
     roi = None
     rgb_bounded = rgb.copy()
+    hull_area = None
 
     for contour, hier in zip(contours, hierarchy):
         (x,y,w,h) = cv2.boundingRect(contour)
@@ -28,25 +29,31 @@ def extractor(src, rgb):
         # print "Width = "+str(w)+" Height = " +str(h)
         # print "X = "+str(x)+" Y = " +str(y)
         try:
-            area = cv2.contourArea(contour)
+            # aspect = cv2.
+            contour_area = cv2.contourArea(contour)
             hull = cv2.convexHull(contour)
             hull_area = cv2.contourArea(hull)
-            solidity = float(area)/hull_area
+            solidity = float(contour_area)/hull_area
         except:
             print "Problem"
+            roi = None
+            return
+
         if h < 120 or w < 90:
             continue
         possible_contours.append(contour)
         min_x, max_x = min(x, min_x), max(x+w, max_x)
         min_y, max_y = min(y, min_y), max(y+h, max_y)
         if w > 80 and h > 80:
-            print "P = ("+str(y)+","+str(x)+")"
-            cv2.rectangle(dst, (x,y), (x+w,y+h), (255, 0, 0), 2)
-            rgb_bounded = cv2.rectangle(rgb, (x+800,y+200), (x+800+w,y+200+h), (255, 0, 0), 2)
+            print "P_rect = ("+str(y)+","+str(x)+")"
+            print "hull area = "+str(hull_area)
+            print "contour area = "+str(contour_area)
+            rect = cv2.rectangle(dst, (x,y), (x+w,y+h), (255, 0, 0), 2)
+            rgb_bounded = cv2.rectangle(rgb, (x+800,y+200), (x+800+w,y+200+h), (255, 0, 0), 5)
             roi = src[y:y+h, x:x+w]
-
+            
             
     # print "Quantidade de ob = " + str(len(possible_contours))
     # cv2.drawContours(dst2, contours, -1, (255, 0, 0), 2)
 
-    return dst, possible_contours, roi, rgb_bounded
+    return dst, possible_contours, roi, rgb_bounded, hull_area
