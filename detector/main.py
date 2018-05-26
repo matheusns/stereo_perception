@@ -69,7 +69,7 @@ if __name__ == '__main__':
         img_bounded, all_features, key, rgb_bounded, roi = detector_features.extractor(gradient, mat, cont_samples, normalized)
 
         # Segregation Mode
-        if roi is not None and segregation:
+        if segregation:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
             # temp = np.vstack([np.hstack([img_bounded, crop_img])])
             resized_image = cv2.resize(rgb_bounded, (1280, 720)) 
@@ -86,7 +86,6 @@ if __name__ == '__main__':
                 cv2.imwrite("/home/matheus/Documents/"+folder+"/without_obst/"+ordered_files[j], mat)
 
         # Annotation Mode
-
         elif roi is not None and anottation:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
             cv2.imshow('Depth', roi)

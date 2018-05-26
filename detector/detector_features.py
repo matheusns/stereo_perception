@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import sys
 import matplotlib.pyplot as plt 
+import math
 
 def findContours(src, rgb, new = False):
     (im2, contours, hierarchy) = cv2.findContours(src.copy(),cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -98,6 +99,16 @@ def getFeatures(contour):
     perimeter = cv2.arcLength(contour,True)
     features.append(perimeter)
 
+    # Fits an ellipse to the contour         
+    # ellipse_copy = cnt_full.copy() 
+    (x, y), (MA, ma), angle = cv2.fitEllipse(contour)
+    # elipse_img = cv2.ellipse(ellipse_copy,ellipse,255,2)
+    a = ma/2
+    b = MA/2
+    eccentricity = math.sqrt(pow(a, 2)-pow(b, 2))
+    eccentricity = round(eccentricity/a, 2)
+    features.append(eccentricity)
+
     hull = cv2.convexHull(contour)
     (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
 
@@ -137,6 +148,8 @@ def extractor(src, mat, sample, rgb):
     hull_area = None
     features_ = []
     key = 0
+    eccentricity = None
+    
 
     for contour, hier in zip(contours, hierarchy):
         (x,y,w,h) = cv2.boundingRect(contour)
@@ -154,47 +167,45 @@ def extractor(src, mat, sample, rgb):
         img_without_cable, cols_sum = cableExtractor(cnt_full)
 
         # contours of the new image
-        img_bounded, roi, new_contour, rgb_bounded = findContours(img_without_cable, rgb, True)
+        img_bounded, roi, new_contour, rgb_bounded = findContours(img_without_cable, rgb.copy(), True)
 
         if roi is not None:
 
             features_ = getFeatures(new_contour)
 
-            # Extracts the contour features
-            print 
-            print features_
-            print
+            if features_[5] < 0.87:
+                # Extracts the contour features
+                print 
+                print features_
+                print
 
-            # Hull image
-            hull_area = cv2.contourArea(cv2.convexHull(contour))
-            (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
+                # Hull image
+                hull_area = cv2.contourArea(cv2.convexHull(contour))
+                (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
 
-            cnt = cv2.drawContours(src, [contour], -1, 0, 2)
-            hull_img = cv2.drawContours(dst_2, [hull], -1, 200, 1)
+                cnt = cv2.drawContours(src, [contour], -1, 0, 2)
+                hull_img = cv2.drawContours(dst_2, [hull], -1, 200, 1)
 
-            # Fits an ellipse to the contour         
-            ellipse_copy = cnt_full.copy() 
-            ellipse = cv2.fitEllipse(contour)
-            elipse_img = cv2.ellipse(ellipse_copy,ellipse,255,2)
+                rgb_gray = cv2.cvtColor(rgb_bounded, cv2.COLOR_BGR2GRAY)
 
+                temp = np.vstack([np.hstack([img_bounded, img_bounded]), np.hstack([img_bounded, cnt])])
 
-            rgb_gray = cv2.cvtColor(rgb_bounded, cv2.COLOR_BGR2GRAY)
+                # print "RGB bounded shape = " + str(rgb_bounded.shape)
 
-            temp = np.vstack([np.hstack([img_bounded, img_bounded]), np.hstack([img_bounded, cnt])])
+                # print "Img bounded shape = " + str(img_bounded.shape)
 
-            # print "RGB bounded shape = " + str(rgb_bounded.shape)
-
-            # print "Img bounded shape = " + str(img_bounded.shape)
-
-            # font = cv2.FONT_HERSHEY_SIMPLEX
-            # cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
-            # cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
-            # cv2.imshow('Depth', img_bounded)
-            # key = cv2.waitKey(1)
-            # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
-            # plt.grid(True)
-            # plt.show()
-            print sample
-        
-
+                # font = cv2.FONT_HERSHEY_SIMPLEX
+                # cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
+                # cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
+                # cv2.imshow('Depth', img_bounded)
+                # key = cv2.waitKey(1)
+                # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
+                # plt.grid(True)
+                # plt.show()
+                print sample
+            else:
+                roi = None
+                rgb_bounded = rgb 
+        else:
+            rgb_bounded = rgb
     return img_bounded, features_, key, rgb_bounded, roi
