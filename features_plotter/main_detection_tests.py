@@ -53,6 +53,7 @@ if __name__ == '__main__':
     clamp_solidity = []
     clamp_extent = []
     clamp_perimeter = []
+    clamp_eccentricity = []
     clamp_label = []
 
     cont_samples = 0
@@ -78,6 +79,7 @@ if __name__ == '__main__':
         clamp_solidity.append(all_features[2])
         clamp_extent.append(all_features[3])
         clamp_perimeter.append(all_features[4])
+        clamp_eccentricity.append(all_features[5])
 
         
 
@@ -87,6 +89,7 @@ if __name__ == '__main__':
     dumper_solidity = []
     dumper_extent = []
     dumper_perimeter = []
+    dumper_eccentricity = []
     dumper_cont = 0
     all_features = []
     cont_samples = 0
@@ -112,6 +115,7 @@ if __name__ == '__main__':
         dumper_solidity.append(all_features[2])
         dumper_extent.append(all_features[3])
         dumper_perimeter.append(all_features[4])
+        dumper_eccentricity.append(all_features[5])
 
     cable_sample = []
     cable_aspect_ratio = [] 
@@ -120,6 +124,7 @@ if __name__ == '__main__':
     cable_extent = []
     cable_perimeter = []
     cable_cont = 0
+    cable_eccentricity = []
     all_features = []
     cont_samples = 0
 
@@ -146,6 +151,7 @@ if __name__ == '__main__':
         cable_solidity.append(all_features[2])
         cable_extent.append(all_features[3])
         cable_perimeter.append(all_features[4])
+        cable_eccentricity.append(all_features[5])
 
     print ''
     print '=================================================='
@@ -172,3 +178,5 @@ if __name__ == '__main__':
     plot.extent(dumper_sample, dumper_extent, clamp_extent, cable_extent)
 
     plot.perimeter(dumper_sample, dumper_perimeter, clamp_perimeter, cable_perimeter)
+
+    plot.eccentricity(dumper_sample, dumper_eccentricity, clamp_eccentricity, cable_eccentricity)
