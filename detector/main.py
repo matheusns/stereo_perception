@@ -56,6 +56,12 @@ if __name__ == '__main__':
     area_vector_value = []
     sample = []
     cont_samples = 0
+    # cable dete
+    detect_with = 0
+    detect_without = 0
+    not_detect_with = 0
+    not_detect_without = 0
+    detector_samples = 0
 
     for j in range (0,len(ordered_files) ):
 
@@ -110,10 +116,54 @@ if __name__ == '__main__':
                 cv2.imwrite("/home/matheus/Documents/"+folder+"/knn_train_without/"+ordered_files[j], roi) # Must be roi_mat
                 cv2.imwrite("/home/matheus/Documents/"+folder+"/without_obst/"+ordered_files[j], mat) # Must be roi_mat
 
-        # Detector Mode
-
+        #Detector evaluator
         elif detector_evaluate:
-            print "Building..."
+            cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
+            # temp = np.vstack([np.hstack([img_bounded, crop_img])])
+            resized_image = cv2.resize(img_bounded, (640, 360)) 
+            cv2.imshow('Depth', resized_image)
+            
+            key = cv2.waitKey(0)
+            print "Key = " +str(key)
+            if key == 27:
+                cv2.destroyAllWindows()
+                break
+            elif key == 67 or key == 99:
+                detect_with += 1
+                detector_samples += 1
+                cv2.imwrite("/home/matheus/Documents/knn/"+folder+"/detected/"+ordered_files[j], mat)
+            elif key == 83 or key == 115:
+                detector_samples += 1
+                not_detect_without += 1
+                cv2.imwrite("/home/matheus/Documents/knn/"+folder+"/not_detected/"+ordered_files[j], mat)
+            elif key == 74 or key == 106:
+                detector_samples += 1
+                detect_without += 1
+            elif key == 66 or key == 98:
+                detector_samples += 1
+                not_detect_with += 1
+        
+            if detector_samples == 500:
+                break
 
+            print ''
+            print "##################################################"
+            print "Detected with = " + str(detect_with)
+            print "Detected Without = " + str(detect_without)
+            print "Not Detected with = " + str(not_detect_with)
+            print "Not Detected Without = " + str(not_detect_without)
+            print "##################################################"
+            print ''
+            
+    if detector_evaluate:
+        print ''
+        print "##################################################"
+        print "################ FINAL ##############################"
+        print "Detected with = " + str(detect_with)
+        print "Detected Without = " + str(detect_without)
+        print "Not Detected with = " + str(not_detect_with)
+        print "Not Detected Without = " + str(not_detect_without)
+        print "##################################################"
+        print ''
     cv2.destroyAllWindows()
     
