@@ -19,12 +19,13 @@ def findContours(src, rgb, new = False):
         possible_contour = None
         roi = None
         rgb_bounded = None
+        img_bounded = None
 
         for contour, hier in zip(contours, hierarchy):
             (x,y,w,h) = cv2.boundingRect(contour)
-            # print "object aspect ratio: " + str(float(w/float(h)))
-            # print "Width = "+str(w)+" Height = " +str(h)
-            # print "X = "+str(x)+" Y = " +str(y)
+            #print "object aspect ratio: " + str(float(w/float(h)))
+            #print "Width = "+str(w)+" Height = " +str(h)
+            #print "X = "+str(x)+" Y = " +str(y)
             
             if h < 130 or w < 90:
                 continue
@@ -62,6 +63,7 @@ def cableExtractor(cnt_full):
     # A new sum is made to remove the cable
     sum_cols = np.sum(dst_cols,axis=0)
     sum_cols_max = np.max(sum_cols)
+    last_zero_index = None
 
     for i in range (0,len(sum_cols)):
         if sum_cols[i] == sum_cols_max:
@@ -107,6 +109,9 @@ def getFeatures(contour):
     b = MA/2
     eccentricity = math.sqrt(pow(a, 2)-pow(b, 2))
     eccentricity = round(eccentricity/a, 2)
+
+    print "Eccenticity = " + str(eccentricity)
+
     features.append(eccentricity)
 
     hull = cv2.convexHull(contour)
@@ -173,7 +178,7 @@ def extractor(src, mat, sample, rgb):
 
             features_ = getFeatures(new_contour)
 
-            if features_[5] < 0.87:
+            if features_[5] < 0.94:
                 # Extracts the contour features
                 print 
                 print features_
@@ -206,6 +211,9 @@ def extractor(src, mat, sample, rgb):
             else:
                 roi = None
                 rgb_bounded = rgb 
+                img_bounded = mat 
         else:
             rgb_bounded = rgb
+            img_bounded = mat
+
     return img_bounded, features_, key, rgb_bounded, roi
