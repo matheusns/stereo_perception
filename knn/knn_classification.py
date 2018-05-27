@@ -34,8 +34,9 @@ train_accuracy = []
 test_accuracy = []
 
 # how many times the classification will run
-test_times = 500
+test_times = 100
 samples = 0
+# Scatter's axis x
 axis_x = []
 
 for i in range(1,test_times):
@@ -49,9 +50,9 @@ for i in range(1,test_times):
     
     clf = KNeighborsClassifier(n_neighbors=k)
 
-    # features = ['area','aspects','solidities','extents','perimeters','labels'] 
+    # features = ['area','aspects','solidities','extents','perimeters','eccentricities','labels'] 
 
-    dropped = ['labels'] 
+    dropped = ['area','aspects','extents','perimeters','labels'] 
 
     X = np.array(random_data.drop(dropped,1))
     y = np.array(random_data['labels'])
@@ -71,23 +72,24 @@ for i in range(1,test_times):
     print 'Standarized KNN', accuracy_knn_std
     print 'MinMax KNN', accuracy_knn_minMax
 
-    # predicted = clf.predict(testing)
-
+    # Lists to save the accuracies
     accuracy_array.append(accuracy_knn)
     accuracy_min_array.append(accuracy_knn_std)
     accuracy_std_array.append(accuracy_knn_minMax)
     axis_x.append(samples)
 
+    # Predition with test set
     y_pred = knn_stardard_pipe.predict(X_test)
-    # cm = confusion_matrix(y_test, y_pred) # Calulate Confusion matrix for test set.
-
+    # Confusion Matrix
     cm = pd.crosstab(y_test, y_pred, rownames=['True'], colnames=['Predicted'], margins=True)
+    # Print confusion matrix
     print cm
 
+    #Compute accuracy on the train set
     train_accuracy.append(knn_stardard_pipe.score(X_train, y_train))
-    
     #Compute accuracy on the test set
     test_accuracy.append(knn_stardard_pipe.score(X_test, y_test) )
+
 #Generate plot
 plt.title('k-NN Varying number of neighbors')
 plt.plot(axis_x, test_accuracy, label='Testing Accuracy')
@@ -125,18 +127,17 @@ mat.rc('axes', titlesize=fontsize)
 mat.rc('axes', labelsize=25)
 mat.rc('xtick', labelsize=fontsize)
 mat.rc('ytick', labelsize=fontsize)
-# mat.rc('text', usetex=True)
 mat.rc('font', size=fontsize, family='serif', style='normal', variant='normal',stretch='normal', weight='normal')
 
 plt.figure(1)
-plt.plot(axis_x, accuracy_array, ls='-', c = 'orange', alpha = 0.5, linewidth = 2.0, linestyle='-', label='knn') 
-plt.scatter(axis_x,accuracy_array,color='orange')
+plt.plot(axis_x, accuracy_array, ls='-', c = 'orange', alpha = 0.5, linewidth = 2.0, linestyle='-') 
+plt.scatter(axis_x,accuracy_array,color='orange', label='knn')
 
-plt.plot(axis_x, accuracy_min_array, ls='-', c = 'red', alpha = 0.5, linewidth = 2.0, linestyle='-', label='MinMax') 
-plt.scatter(axis_x,accuracy_min_array,color='red')
+plt.plot(axis_x, accuracy_min_array, ls='-', c = 'red', alpha = 0.5, linewidth = 2.0, linestyle='-') 
+plt.scatter(axis_x,accuracy_min_array,color='red', label='MinMax')
 
-plt.plot(axis_x, accuracy_std_array, ls='-', c = 'black', alpha = 0.5, linewidth = 2.0, linestyle='-', label='Standarized') 
-plt.scatter(axis_x,accuracy_std_array,color='black')
+plt.plot(axis_x, accuracy_std_array, ls='-', c = 'black', alpha = 0.5, linewidth = 2.0, linestyle='-') 
+plt.scatter(axis_x,accuracy_std_array,color='black', label='Standarized')
 
 y = [0,1]
 x_axis = [0, test_times]
@@ -147,11 +148,9 @@ plt.xticks( np.arange(min(x_axis), max(x_axis), 25) )
 plt.xlabel(u"Iterações")
 plt.ylabel(u"Precisão de acerto")
 
-custom_lines = [Line2D([0], [0], color='orange', lw=4),
-                Line2D([0], [0], color='red', lw=4),
-                Line2D([0], [0], color='black', lw=4)]
+plt.title(u""+"Some title", fontsize = 25)
+plt.legend(loc='upper center', scatterpoints = 1, bbox_to_anchor=(0.5, -0.1),  shadow=True, ncol=3)
 
-plt.legend(custom_lines, ['Knn', 'MinMax', 'Standarized'])
 # plt.plot( amortecedores_area, 'b-o',label="amortecedor" )
 # Grid
 plt.grid(True)
