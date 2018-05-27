@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
    main.py
    Script to read images and process them.   
@@ -14,6 +16,7 @@ import imgpreprocess as ipp
 import features
 import plot_features as plot
 import pandas as pd
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     try:
@@ -30,8 +33,8 @@ if __name__ == '__main__':
         # dumper_folder = "/home/matheus/Documents/plot/dumper" 
         # cable_path = "/home/matheus/Documents/plot/cable/" 
 
-        clamp_path = "/home/matheus/Documents/grampo/depth/"
-        dumper_path = "/home/matheus/Documents/amor/depth/" 
+        # clamp_folder = "/home/matheus/Documents/grampo/depth/"
+        # dumper_folder = "/home/matheus/Documents/amor/depth/" 
 
         file_name = str(sys.argv[0])
 
@@ -45,7 +48,7 @@ if __name__ == '__main__':
     clamp_ordered_files = sorted(clamp_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
     dumper_ordered_files = sorted(dumper_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
     cable_ordered_files = sorted(cable_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
-    
+
 
     clamp_sample = []
     clamp_aspect_ratio = [] 
@@ -62,8 +65,8 @@ if __name__ == '__main__':
 
         cont_samples += 1
 
-        print clamp_path+clamp_ordered_files[j]
-        src = cv2.imread(clamp_path+clamp_ordered_files[j])
+        print clamp_folder+clamp_ordered_files[j]
+        src = cv2.imread(clamp_folder+clamp_ordered_files[j])
         mat = src.copy()
 
         gradient = ipp.preprocess(mat)
@@ -81,7 +84,7 @@ if __name__ == '__main__':
         clamp_perimeter.append(all_features[4])
         clamp_eccentricity.append(all_features[5])
 
-        
+
 
     dumper_sample = []
     dumper_aspect_ratio = [] 
@@ -98,8 +101,8 @@ if __name__ == '__main__':
 
         cont_samples += 1
 
-        print dumper_path+dumper_ordered_files[j]
-        src = cv2.imread(dumper_path+dumper_ordered_files[j])
+        print dumper_folder+dumper_ordered_files[j]
+        src = cv2.imread(dumper_folder+dumper_ordered_files[j])
         mat = src.copy()
 
         gradient = ipp.preprocess(mat)
@@ -108,7 +111,7 @@ if __name__ == '__main__':
         if key == 27:
             cv2.destroyAllWindows()
             break
-        
+
         dumper_sample.append(cont_samples)
         dumper_aspect_ratio.append(all_features[0])  
         dumper_contour_area.append(all_features[1])
@@ -116,7 +119,7 @@ if __name__ == '__main__':
         dumper_extent.append(all_features[3])
         dumper_perimeter.append(all_features[4])
         dumper_eccentricity.append(all_features[5])
-
+    
     cable_sample = []
     cable_aspect_ratio = [] 
     cable_contour_area = [] 
@@ -137,7 +140,10 @@ if __name__ == '__main__':
         src = cv2.imread(cable_path+cable_ordered_files[j])
         mat = src.copy()
 
-        print mat.shape
+        # if cont_samples == 630:
+        #     break
+
+        # cv2.imwrite(cable_path+cont_samples+".png", mat)
 
         gradient = ipp.preprocess(mat, False)
         img_bounded, all_features, key = features.extractor(gradient, mat, cont_samples, True)
@@ -169,14 +175,27 @@ if __name__ == '__main__':
     print '=================================================='
     print ''
 
-    plot.area(dumper_sample, dumper_contour_area, clamp_contour_area, cable_contour_area)
+    plot.vs_feature(dumper_extent, dumper_solidity, clamp_extent, clamp_solidity, cable_extent, cable_solidity, u"Extensão", "Solidez", u"Extensão x Solidez" )
+    plot.vs_feature(dumper_eccentricity, dumper_solidity, clamp_eccentricity, clamp_solidity, cable_eccentricity, cable_solidity, u"Ecentricidade", "Solidez", u"Ecentricidade x Solidez" )
+    plot.vs_feature(dumper_eccentricity, dumper_extent, clamp_eccentricity, clamp_extent, cable_eccentricity, cable_extent, u"Ecentricidade", u"Extensão", u"Ecentricidade x Extensão" )
+    plot.vs_feature(dumper_eccentricity, dumper_contour_area, clamp_eccentricity, clamp_contour_area, cable_eccentricity, cable_contour_area, u"Ecentricidade", u"Área", u"Ecentricidade x Área" )
+    plot.vs_feature(dumper_extent, dumper_contour_area, clamp_extent, clamp_contour_area, cable_extent, cable_contour_area, u"Extensão", u"Área", u"Extensão x Área" )
+    plot.vs_feature(dumper_solidity, dumper_contour_area, clamp_solidity, clamp_contour_area, cable_solidity, cable_contour_area, u"Solidez", u"Área", u"Solidez x Área" )
 
-    plot.aspect_ratio(dumper_sample, dumper_aspect_ratio, clamp_aspect_ratio, cable_aspect_ratio)
+    # plot.single_feature(dumper_sample, dumper_contour_area, clamp_contour_area, cable_contour_area, u"Área", u"Área")
+    # plot.single_feature(dumper_sample, dumper_aspect_ratio, clamp_aspect_ratio, cable_aspect_ratio, u"Razão de Aspecto", u"Feature Razão de Aspecto" )
+    # plot.single_feature(dumper_sample, dumper_solidity, clamp_solidity, cable_solidity, "Solidez", u"Medidas de Solidez")
+    # plot.single_feature(dumper_sample, dumper_extent, clamp_extent, cable_extent, u"Extensão", u"Medidas de Extensão")
+    # plot.single_feature(dumper_sample, dumper_perimeter, clamp_perimeter, cable_perimeter, u"Perímetro", u"Feature Perímetro")
+    # plot.single_feature(dumper_sample, dumper_eccentricity, clamp_eccentricity, cable_eccentricity, "Ecentricidade", "Feature Ecentricidade")
 
-    plot.solidity(dumper_sample, dumper_solidity, clamp_solidity, cable_solidity)
 
-    plot.extent(dumper_sample, dumper_extent, clamp_extent, cable_extent)
+    # plt.plot(cable_solidity, ls='-', c = 'teal', alpha = 0.8, linewidth = 2.0, linestyle='-', marker= 's', label="Cable") 
 
-    plot.perimeter(dumper_sample, dumper_perimeter, clamp_perimeter, cable_perimeter)
+    # plt.plot(dumper_solidity, ls='-', c = 'yellow', alpha = 0.8, linewidth = 2.0, linestyle='-', marker= '^', label="Dumper") 
 
-    plot.eccentricity(dumper_sample, dumper_eccentricity, clamp_eccentricity, cable_eccentricity)
+    # plt.plot(clamp_solidity, ls='-', c = 'orangered', alpha = 0.8, linewidth = 2.0, linestyle='-', marker= '3', label="Clamp") 
+
+    # plt.legend(loc='upper center', scatterpoints = 1, bbox_to_anchor=(0.5, -0.1),  shadow=True, ncol=3)
+    # plt.grid(True)
+    # plt.show()
