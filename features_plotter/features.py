@@ -110,7 +110,7 @@ def getFeatures(contour):
     hull = cv2.convexHull(contour)
     (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
 
-    # features = [aspect_ratio, contour_area, solidity, extent, perimeter]
+    # features = [aspect_ratio, contour_area, solidity, extent, perimeter, eccentricity ]
 
     return features
 
@@ -184,7 +184,8 @@ def extractor(src, mat, sample, ignore = False):
         # font = cv2.FONT_HERSHEY_SIMPLEX
         # cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
         # cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
-        # cv2.imshow('Depth', temp)
+        # resized_image = cv2.resize(temp, (640, 360)) 
+        # cv2.imshow('Depth', resized_image)
         # key = cv2.waitKey(1)
         # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
         # plt.grid(True)
