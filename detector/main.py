@@ -21,6 +21,7 @@ if __name__ == '__main__':
         segregation = sys.argv[2]
         anottation = sys.argv[3]
         detector_evaluate =  sys.argv[4]
+        obstacle = sys.argv[5]
 
         if anottation == 'true' or anottation == 't' or anottation == 'T':
             anottation = True
@@ -77,19 +78,35 @@ if __name__ == '__main__':
         # Segregation Mode
         if segregation:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
-            # temp = np.vstack([np.hstack([img_bounded, crop_img])])
-            resized_image = cv2.resize(rgb_bounded, (1280, 720)) 
-            cv2.imshow('Depth', resized_image)
+            if roi == None:
+                img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_BGR2GRAY)
+
+            resized_image = cv2.resize(img_bounded, (640, 360)) 
+            resized_image_2 = cv2.resize(gradient, (640, 360)) 
+            temp = np.vstack([np.hstack([resized_image_2, resized_image])])
+            cv2.imshow('Depth', temp)
             
-            key = cv2.waitKey(1)
+            key = cv2.waitKey(0)
+            print "Key = " + str(key) 
             if key == 27:
                 cv2.destroyAllWindows()
                 break
-            elif key == 112:
-                cv2.imwrite("/home/matheus/Documents/"+folder+"/with_obst/"+ordered_files[j], mat)
-            elif key == 119:
-                cv2.imwrite("/home/matheus/Documents/"+folder+"/knn_train_without/"+ordered_files[j], crop_img) # Must be roi_mat
-                cv2.imwrite("/home/matheus/Documents/"+folder+"/without_obst/"+ordered_files[j], mat)
+
+            elif key == 83 or key == 115:
+                detector_samples += 1
+                # grampo = clamp
+                if obstacle == "clamp":
+                    cv2.imwrite("/home/matheus/Documents/clamp_knn/"+ordered_files[j], mat)
+                # amortecedor = dumper
+                elif obstacle == "dumper":
+                    cv2.imwrite("/home/matheus/Documents/dumper_knn/"+ordered_files[j], mat)
+                elif obstacle == "cable":
+                    print "==== == Cable Saved at /home/matheus/Documents/cable_knn/"+ordered_files[j] + "== ====" 
+                    cv2.imwrite("/home/matheus/Documents/cable_knn/"+ordered_files[j], gradient)
+                    print ''
+
+            if detector_samples == 110:
+                break
 
         # Annotation Mode
         elif roi is not None and anottation:
