@@ -22,8 +22,6 @@ if __name__ == '__main__':
         dumper_folder = "/home/matheus/Documents/dumper_knn/"
         # dumper_folder = "/home/matheus/Documents/plot/dumper" 
 
-        dumper_path = "/home/matheus/Documents/amor/depth/" 
-
         file_name = str(sys.argv[1])
 
     except IndexError:
@@ -38,6 +36,7 @@ if __name__ == '__main__':
     dumper_solidity = []
     dumper_extent = []
     dumper_perimeter = []
+    dumper_eccentricity = []
     dumper_cont = 0
     all_features = []
     cont_samples = 0
@@ -46,8 +45,8 @@ if __name__ == '__main__':
 
         cont_samples += 1
 
-        print dumper_path+dumper_ordered_files[j]
-        src = cv2.imread(dumper_path+dumper_ordered_files[j])
+        print dumper_folder+dumper_ordered_files[j]
+        src = cv2.imread(dumper_folder+dumper_ordered_files[j])
         mat = src.copy()
 
         gradient = ipp.preprocess(mat)
@@ -63,6 +62,9 @@ if __name__ == '__main__':
         dumper_solidity.append(all_features[2])
         dumper_extent.append(all_features[3])
         dumper_perimeter.append(all_features[4])
+        dumper_eccentricity.append(all_features[5])
+
+        
 
     print ''
     print '=================================================='
@@ -83,11 +85,12 @@ if __name__ == '__main__':
     solidities = dumper_solidity
     extents = dumper_extent
     perimeters = dumper_perimeter
+    eccentricities = dumper_eccentricity
     labels =  dumper_label
 
-    data_frame = { 'area': areas, 'aspects': aspects, 'solidities': solidities, 'extents': extents, 'perimeters': perimeters, 'labels': labels}
+    data_frame = { 'area': areas, 'aspects': aspects, 'solidities': solidities, 'extents': extents, 'perimeters': perimeters, 'eccentricities': eccentricities, 'labels': labels}
 
-    df = pd.DataFrame(data_frame, columns = ['area', 'aspects', 'solidities', 'extents', 'perimeters', 'labels'])
+    df = pd.DataFrame(data_frame, columns = ['area', 'aspects', 'solidities', 'extents', 'perimeters', 'eccentricities', 'labels'])
 
     # df.to_csv(file_name + '.csv')
     df.to_csv(file_name + '.txt')

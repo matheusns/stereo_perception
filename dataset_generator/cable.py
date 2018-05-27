@@ -36,6 +36,7 @@ if __name__ == '__main__':
     cable_solidity = []
     cable_extent = []
     cable_perimeter = []
+    cable_eccentricity = []
     cable_cont = 0
     all_features = []
     cont_samples = 0
@@ -63,6 +64,7 @@ if __name__ == '__main__':
         cable_solidity.append(all_features[2])
         cable_extent.append(all_features[3])
         cable_perimeter.append(all_features[4])
+        cable_eccentricity.append(all_features[5])
 
     print ''
     print '=================================================='
@@ -83,13 +85,12 @@ if __name__ == '__main__':
     solidities = cable_solidity
     extents = cable_extent
     perimeters = cable_perimeter
+    eccentricities = cable_eccentricity
     labels =  cable_label
 
+    data_frame = { 'area': areas, 'aspects': aspects, 'solidities': solidities, 'extents': extents, 'perimeters': perimeters, 'eccentricities': eccentricities, 'labels': labels}
 
-    # Pandas data frame
-    data_frame = { 'area': areas, 'aspects': aspects, 'solidities': solidities, 'extents': extents, 'perimeters': perimeters, 'labels': labels}
-
-    df = pd.DataFrame(data_frame, columns = ['area', 'aspects', 'solidities', 'extents', 'perimeters', 'labels'])
+    df = pd.DataFrame(data_frame, columns = ['area', 'aspects', 'solidities', 'extents', 'perimeters', 'eccentricities', 'labels'])
 
     # df.to_csv(file_name + '.csv')
     df.to_csv(file_name + '.txt')

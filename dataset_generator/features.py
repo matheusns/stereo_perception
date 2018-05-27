@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import sys
 import matplotlib.pyplot as plt 
+import math
 
 def findContours(src, new = False, ignore = False):
     (im2, contours, hierarchy) = cv2.findContours(src.copy(),cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -96,10 +97,21 @@ def getFeatures(contour):
     perimeter = cv2.arcLength(contour,True)
     features.append(perimeter)
 
+    # Fits an ellipse to the contour         
+    # ellipse_copy = cnt_full.copy() 
+    (x, y), (MA, ma), angle = cv2.fitEllipse(contour)
+    # elipse_img = cv2.ellipse(ellipse_copy,ellipse,255,2)
+    a = ma/2
+    b = MA/2
+    eccentricity = math.sqrt(pow(a, 2)-pow(b, 2))
+    eccentricity = round(eccentricity/a, 2)
+    features.append(eccentricity)
+
     hull = cv2.convexHull(contour)
     (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
 
-    # features = [aspect_ratio, contour_area, solidity, extent, perimeter]
+    # features = [aspect_ratio, contour_area, solidity, extent, perimeter, eccentricity ]
+
     return features
 
 
@@ -166,18 +178,13 @@ def extractor(src, mat, sample, ignore = False):
 
         cnt = cv2.drawContours(src, [contour], -1, 0, 2)
         hull_img = cv2.drawContours(dst_2, [hull], -1, 200, 1)
-
-        # Fits an ellipse to the contour         
-        ellipse_copy = cnt_full.copy() 
-        ellipse = cv2.fitEllipse(contour)
-        elipse_img = cv2.ellipse(ellipse_copy,ellipse,255,2)
-        
+                
         temp = np.vstack([np.hstack([cnt_full, hull_img]), np.hstack([img_bounded, cnt])])
+
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
-
-        resized_image = cv2.resize(temp, (1280, 720)) 
         cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
+        resized_image = cv2.resize(temp, (640, 360)) 
         cv2.imshow('Depth', resized_image)
         key = cv2.waitKey(1)
         # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
