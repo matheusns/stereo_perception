@@ -1,9 +1,9 @@
 """
    main.py
-   Script to read images and process them.   
+   Script to read images and process them.
    Matheus Nascimento
    April, 2018
-   Based on Python 2.7 Version    
+   Based on Python 2.7 Version
 """
 import os
 import cv2
@@ -12,6 +12,9 @@ import sys
 import re
 import imgpreprocess as ipp
 import detector_features
+import knn_predictor as knn
+
+# python main.py 05_05_2320 t f f clamp
 
 if __name__ == '__main__':
     try:
@@ -72,22 +75,34 @@ if __name__ == '__main__':
         normalized = cv2.imread(normalized_path+ordered_files[j])
         mat = src.copy()
 
-        gradient = ipp.preprocess(mat)
-        img_bounded, all_features, key, rgb_bounded, roi = detector_features.extractor(gradient, mat, cont_samples, normalized)
+        gradient, without_close, test = ipp.preprocess(mat)
+        img_bounded, all_features, key, rgb_bounded, roi, flood, cols_intermedi_img, without_cable = detector_features.extractor(mat, without_close, gradient, cont_samples, normalized)
 
         # Segregation Mode
         if segregation:
-            cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
-            if roi == None:
-                img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_BGR2GRAY)
 
-            resized_image = cv2.resize(img_bounded, (640, 360)) 
-            resized_image_2 = cv2.resize(gradient, (640, 360)) 
-            temp = np.vstack([np.hstack([resized_image_2, resized_image])])
-            cv2.imshow('Depth', temp)
-            
-            key = cv2.waitKey(0)
-            print "Key = " + str(key) 
+        # Used to show images provided by the detector_features.extractor method
+
+            # cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
+
+        # When there is nothing to detect the method returns a roi equal None
+
+            # if roi == None:
+                # img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_BGR2GRAY)
+                # rgb_bounded = img_bounded 
+                # mat = cv2.cvtColor(mat, cv2.COLOR_BGR2GRAY)
+            # else:
+                # img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_GRAY2BGR)
+
+            # resized_image = cv2.resize(rgb_bounded, (640, 360))
+            # # resized_image = cv2.resize(img_bounded, (640, 360))
+            # resized_image_2 = cv2.resize(img_bounded, (640, 360))
+            # temp = np.vstack([np.hstack([resized_image_2, resized_image])])
+            # cv2.imshow('Depth', temp)
+            # key = cv2.waitKey(1)
+
+            print "Key = " + str(key)
+
             if key == 27:
                 cv2.destroyAllWindows()
                 break
@@ -96,12 +111,13 @@ if __name__ == '__main__':
                 detector_samples += 1
                 # grampo = clamp
                 if obstacle == "clamp":
-                    cv2.imwrite("/home/matheus/Documents/clamp_knn/"+ordered_files[j], mat)
+                    cv2.imwrite("/home/matheus/Documents/tcc/"+"final_cable_"+ordered_files[j], without_cable)
+                    cv2.imwrite("/home/matheus/Documents/tcc/"+"flood_"+ordered_files[j], flood)
                 # amortecedor = dumper
                 elif obstacle == "dumper":
                     cv2.imwrite("/home/matheus/Documents/dumper_knn/"+ordered_files[j], mat)
                 elif obstacle == "cable":
-                    print "==== == Cable Saved at /home/matheus/Documents/cable_knn/"+ordered_files[j] + "== ====" 
+                    print "==== == Cable Saved at /home/matheus/Documents/cable_knn/"+ordered_files[j] + "== ===="
                     cv2.imwrite("/home/matheus/Documents/cable_knn/"+ordered_files[j], gradient)
                     print ''
 
@@ -137,9 +153,9 @@ if __name__ == '__main__':
         elif detector_evaluate:
             cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
             # temp = np.vstack([np.hstack([img_bounded, crop_img])])
-            resized_image = cv2.resize(img_bounded, (640, 360)) 
+            resized_image = cv2.resize(img_bounded, (640, 360))
             cv2.imshow('Depth', resized_image)
-            
+
             key = cv2.waitKey(0)
             print "Key = " +str(key)
             if key == 27:
@@ -159,7 +175,7 @@ if __name__ == '__main__':
             elif key == 66 or key == 98:
                 detector_samples += 1
                 not_detect_with += 1
-        
+
             if detector_samples == 500:
                 break
 
@@ -171,7 +187,7 @@ if __name__ == '__main__':
             print "Not Detected Without = " + str(not_detect_without)
             print "##################################################"
             print ''
-            
+
     if detector_evaluate:
         print ''
         print "##################################################"
@@ -183,4 +199,3 @@ if __name__ == '__main__':
         print "##################################################"
         print ''
     cv2.destroyAllWindows()
-    

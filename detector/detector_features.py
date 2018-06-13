@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import cv2
 import numpy as np
 import sys
 import matplotlib.pyplot as plt 
 import math
+import plot_cables_extractor as plot_cables
 
 def findContours(src, rgb, new = False):
     (im2, contours, hierarchy) = cv2.findContours(src.copy(),cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -35,7 +37,7 @@ def findContours(src, rgb, new = False):
 
             possible_contour = contour
             rect = cv2.rectangle(dst, (x,y), (x+w,y+h), (255, 0, 0), 2)
-            rgb_bounded = cv2.rectangle(rgb, (x+800,y+200), (x+800+w,y+200+h), (255, 0, 0), 5)
+            rgb_bounded = cv2.rectangle(rgb, (x+800,y+200), (x+800+w,y+200+h), (0, 255, 255), 8)
             roi = src[y:y+h, x:x+w]
 
         return dst,roi, possible_contour, rgb_bounded
@@ -49,6 +51,7 @@ def cableExtractor(cnt_full):
     # Sum of the all coloumns
     sum_cols = np.sum(cnt_full,axis=0)
     sum_cols_max = np.max(sum_cols)
+    sum_cols_before = sum_cols
 
     # Drops all coloumns below ot the threshold
     for i in range (0,len(sum_cols)):
@@ -76,7 +79,9 @@ def cableExtractor(cnt_full):
                 last_zero_index = i
             dst_cols[:,i] = 0
 
-    return dst_cols, sum_cols   
+    last_sum_cols = np.sum(dst_cols,axis=0)
+
+    return dst_cols, sum_cols, sum_cols_before, last_sum_cols, dst_before   
 
 def getFeatures(contour):
 
@@ -90,7 +95,8 @@ def getFeatures(contour):
     contour_area = cv2.contourArea(contour)
     features.append(contour_area)
 
-    hull_area = cv2.contourArea(cv2.convexHull(contour))
+    hull = cv2.convexHull(contour)
+    hull_area = cv2.contourArea(hull)
     solidity = float(contour_area)/(hull_area+0.0001)
     features.append(solidity)
 
@@ -119,7 +125,7 @@ def getFeatures(contour):
 
     # features = [aspect_ratio, contour_area, solidity, extent, perimeter]
 
-    return features
+    return features, hull
 
 
 def img_fill(im_in): 
@@ -142,10 +148,11 @@ def img_fill(im_in):
 
     return fill_image   
 
-def extractor(src, mat, sample, rgb):
 
+def extractor(mat, crop_img, src, sample, rgb):
+
+    original_mat = mat.copy()
     contours, hierarchy = findContours(src, rgb)  
-    dst_2 = src.copy()
     contour_img = src.copy()
     elipse_img = src.copy()
     possible_contours = [] 
@@ -163,50 +170,71 @@ def extractor(src, mat, sample, rgb):
             continue
 
         img_to_fill = src.copy()
-        cnt_full = img_fill(img_to_fill)
         # Fills the contour area
+        cnt_full = img_fill(img_to_fill)
+
+        # image convex hull
         hull = cv2.convexHull(contour)
-        # cnt_full = cv2.fillPoly(img_to_fill, pts = [contour], color=255)
 
         # Image without cable
-        img_without_cable, cols_sum = cableExtractor(cnt_full)
+        img_without_cable, cols_sum, cols_sum_before, last_sum_cols, cols_intermedi_img = cableExtractor(cnt_full)
 
         # contours of the new image
         img_bounded, roi, new_contour, rgb_bounded = findContours(img_without_cable, rgb.copy(), True)
 
         if roi is not None:
 
-            features_ = getFeatures(new_contour)
+            features_, hull = getFeatures(new_contour)
+            features_before, hull_before = getFeatures(contour)
 
             if features_[5] < 0.94:
                 # Extracts the contour features
-                print 
+                print 'features = [aspect_ratio, contour_area, solidity, extent, perimeter, eccentricity]'
+                print ''
+                print '############### old ##################'
+                print features_before
+                print '############### new ##################'
                 print features_
                 print
 
-                # Hull image
-                hull_area = cv2.contourArea(cv2.convexHull(contour))
-                (x_h,y_h,w_h,h_h) = cv2.boundingRect(hull)
+                dst_2 = img_without_cable.copy()
+                hull_img = cv2.drawContours(dst_2, [hull], -1, 255, 5)
 
-                cnt = cv2.drawContours(src, [contour], -1, 0, 2)
-                hull_img = cv2.drawContours(dst_2, [hull], -1, 200, 1)
+                # mat = cv2.cvtColor(mat)
+                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_GRAY2BGR)
+                src = cv2.cvtColor(src, cv2.COLOR_GRAY2BGR) 
+                cnt_full = cv2.cvtColor(cnt_full, cv2.COLOR_GRAY2BGR)
+                cols_intermedi_img = cv2.cvtColor(cols_intermedi_img, cv2.COLOR_GRAY2BGR)
+                img_without_cable = cv2.cvtColor(img_without_cable, cv2.COLOR_GRAY2BGR)
+                hull_img = cv2.cvtColor(hull_img, cv2.COLOR_GRAY2BGR) 
+                img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_GRAY2BGR)
+                # rgb_bounded = cv2.cvtColor()
 
-                rgb_gray = cv2.cvtColor(rgb_bounded, cv2.COLOR_BGR2GRAY)
+                mat = cv2.resize(mat, (640, 360))
+                crop_img = cv2.resize(crop_img, (640, 360))
+                src = cv2.resize(src, (640, 360))
+                cnt_full = cv2.resize(cnt_full, (640, 360))
+                cols_intermedi_img = cv2.resize(cols_intermedi_img, (640, 360))
+                img_without_cable = cv2.resize(img_without_cable, (640, 360))
+                hull_img = cv2.resize(hull_img, (640, 360))
+                img_bounded = cv2.resize(img_bounded, (640, 360))
+                rgb_bounded = cv2.resize(rgb_bounded, (640, 360))
 
-                temp = np.vstack([np.hstack([img_bounded, img_bounded]), np.hstack([img_bounded, cnt])])
 
-                # print "RGB bounded shape = " + str(rgb_bounded.shape)
+                temp = np.vstack([np.hstack([mat, crop_img, src]), np.hstack([cnt_full,cols_intermedi_img, img_without_cable]), np.hstack([hull_img, img_bounded, rgb_bounded]) ])
 
-                # print "Img bounded shape = " + str(img_bounded.shape)
+                temp = cv2.resize(temp, (640,360))
 
                 # font = cv2.FONT_HERSHEY_SIMPLEX
-                # cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
-                # cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
-                # cv2.imshow('Depth', img_bounded)
-                # key = cv2.waitKey(1)
-                # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
-                # plt.grid(True)
-                # plt.show()
+                # cv2.putText(temp, str(sample) ,(50,50), font, 1, 255 , 2, cv2.LINE_AA)
+                cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
+                cv2.imshow('Depth', temp)
+                key = cv2.waitKey(1)
+
+                # # Plot the cable cols intensities 
+                
+                # plot_cables.intensities(cols_sum, cols_sum_before, last_sum_cols)
+                
                 print sample
             else:
                 roi = None
@@ -216,4 +244,4 @@ def extractor(src, mat, sample, rgb):
             rgb_bounded = rgb
             img_bounded = mat
 
-    return img_bounded, features_, key, rgb_bounded, roi
+    return img_bounded, features_, key, rgb_bounded, roi, cnt_full, cols_intermedi_img, img_without_cable
