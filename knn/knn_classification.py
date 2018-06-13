@@ -22,7 +22,7 @@ try:
     k = int(sys.argv[2])
 except:
     file_name = "dataset.txt"
-    k = 5
+    k = 3
     
 df = pd.read_csv(file_name)
 df.drop(['id'], 1, inplace=True)
@@ -34,10 +34,13 @@ train_accuracy = []
 test_accuracy = []
 
 # how many times the classification will run
-test_times = 100
+test_times = 400
 samples = 0
 # Scatter's axis x
 axis_x = []
+
+
+print "K = " + str(k)
 
 for i in range(1,test_times):
     random_data = utils.shuffle(df)
@@ -52,7 +55,7 @@ for i in range(1,test_times):
 
     # features = ['area','aspects','solidities','extents','perimeters','eccentricities','labels'] 
 
-    dropped = ['area','aspects','extents','perimeters','labels'] 
+    dropped = ['area','aspects','perimeters','labels'] 
 
     X = np.array(random_data.drop(dropped,1))
     y = np.array(random_data['labels'])
