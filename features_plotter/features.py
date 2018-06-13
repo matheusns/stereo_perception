@@ -181,12 +181,12 @@ def extractor(src, mat, sample, ignore = False):
                 
         temp = np.vstack([np.hstack([cnt_full, hull_img]), np.hstack([img_bounded, cnt])])
 
-        # font = cv2.FONT_HERSHEY_SIMPLEX
-        # cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
-        # cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
-        # resized_image = cv2.resize(temp, (640, 360)) 
-        # cv2.imshow('Depth', resized_image)
-        # key = cv2.waitKey(1)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(temp, str(sample) ,(200,100), font, 1, 255 , 2, cv2.LINE_AA)
+        cv2.namedWindow('Depth', cv2.WINDOW_GUI_EXPANDED)
+        resized_image = cv2.resize(temp, (640, 360)) 
+        cv2.imshow('Depth', resized_image)
+        key = cv2.waitKey(1)
         # plt.plot(cols_sum, ls='-', c = 'blue', alpha = 0.5, linewidth = 2.0, linestyle='-') 
         # plt.grid(True)
         # plt.show()

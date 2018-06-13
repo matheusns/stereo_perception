@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     try:
 
-        #clamp = grampo
+        # clamp = grampo
         clamp_folder = "/home/matheus/Documents/clamp_knn/" 
         #dumper = amortecedor
         dumper_folder = "/home/matheus/Documents/dumper_knn/"
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
         # clamp_folder = "/home/matheus/Documents/plot/clamp/" 
         # # # dumper = amortecedor
-        # dumper_folder = "/home/matheus/Documents/plot/dumper" 
+        # dumper_folder = "/home/matheus/Documents/plot/dumper/" 
         # cable_path = "/home/matheus/Documents/plot/cable/" 
 
         # clamp_folder = "/home/matheus/Documents/grampo/depth/"
@@ -45,10 +45,16 @@ if __name__ == '__main__':
     dumper_dirFiles = os.listdir(dumper_folder)
     cable_dirFiles = os.listdir(cable_path)
 
+    mess = True
+
     clamp_ordered_files = sorted(clamp_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
     dumper_ordered_files = sorted(dumper_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
     cable_ordered_files = sorted(cable_dirFiles, key=lambda x: (int(re.sub('\D','',x)),x))
 
+    if mess:
+        clamp_ordered_files = clamp_dirFiles
+        dumper_ordered_files = dumper_dirFiles
+        cable_ordered_files = cable_dirFiles
 
     clamp_sample = []
     clamp_aspect_ratio = [] 
@@ -83,7 +89,6 @@ if __name__ == '__main__':
         clamp_extent.append(all_features[3])
         clamp_perimeter.append(all_features[4])
         clamp_eccentricity.append(all_features[5])
-
 
 
     dumper_sample = []
@@ -175,19 +180,22 @@ if __name__ == '__main__':
     print '=================================================='
     print ''
 
-    plot.vs_feature(dumper_extent, dumper_solidity, clamp_extent, clamp_solidity, cable_extent, cable_solidity, u"Extensão", "Solidez", u"Extensão x Solidez" )
-    plot.vs_feature(dumper_eccentricity, dumper_solidity, clamp_eccentricity, clamp_solidity, cable_eccentricity, cable_solidity, u"Ecentricidade", "Solidez", u"Ecentricidade x Solidez" )
-    plot.vs_feature(dumper_eccentricity, dumper_extent, clamp_eccentricity, clamp_extent, cable_eccentricity, cable_extent, u"Ecentricidade", u"Extensão", u"Ecentricidade x Extensão" )
-    plot.vs_feature(dumper_eccentricity, dumper_contour_area, clamp_eccentricity, clamp_contour_area, cable_eccentricity, cable_contour_area, u"Ecentricidade", u"Área", u"Ecentricidade x Área" )
-    plot.vs_feature(dumper_extent, dumper_contour_area, clamp_extent, clamp_contour_area, cable_extent, cable_contour_area, u"Extensão", u"Área", u"Extensão x Área" )
-    plot.vs_feature(dumper_solidity, dumper_contour_area, clamp_solidity, clamp_contour_area, cable_solidity, cable_contour_area, u"Solidez", u"Área", u"Solidez x Área" )
+    print "Media = " + str(sum(cable_eccentricity)/len(cable_eccentricity))
+
+    # plot.vs_feature(dumper_extent, dumper_solidity, clamp_extent, clamp_solidity, cable_extent, cable_solidity, u"Extensão", "Solidez", u"Extensão x Solidez" )
+    # plot.vs_feature(dumper_eccentricity, dumper_solidity, clamp_eccentricity, clamp_solidity, cable_eccentricity, cable_solidity, u"Excentricidade", "Solidez", u"Excentricidade x Solidez" )
+    # plot.vs_feature(dumper_eccentricity, dumper_extent, clamp_eccentricity, clamp_extent, cable_eccentricity, cable_extent, u"Excentricidade", u"Extensão", u"Excentricidade x Extensão" )
+    # plot.vs_feature(dumper_eccentricity, dumper_contour_area, clamp_eccentricity, clamp_contour_area, cable_eccentricity, cable_contour_area, u"Excentricidade", u"Área", u"Excentricidade x Área" )
+    # plot.vs_feature(dumper_extent, dumper_contour_area, clamp_extent, clamp_contour_area, cable_extent, cable_contour_area, u"Extensão", u"Área", u"Extensão x Área" )
+    # plot.vs_feature(dumper_solidity, dumper_contour_area, clamp_solidity, clamp_contour_area, cable_solidity, cable_contour_area, u"Solidez", u"Área", u"Solidez x Área" )
+    plot.threeD(dumper_extent, dumper_solidity, dumper_eccentricity, clamp_extent, clamp_solidity, clamp_eccentricity, cable_extent, cable_solidity, cable_eccentricity, u"Extensão", u"Solidez", u"Excentricidade", u"Extensão x Solidez x Excentricidade")
 
     # plot.single_feature(dumper_sample, dumper_contour_area, clamp_contour_area, cable_contour_area, u"Área", u"Área")
     # plot.single_feature(dumper_sample, dumper_aspect_ratio, clamp_aspect_ratio, cable_aspect_ratio, u"Razão de Aspecto", u"Feature Razão de Aspecto" )
     # plot.single_feature(dumper_sample, dumper_solidity, clamp_solidity, cable_solidity, "Solidez", u"Medidas de Solidez")
     # plot.single_feature(dumper_sample, dumper_extent, clamp_extent, cable_extent, u"Extensão", u"Medidas de Extensão")
     # plot.single_feature(dumper_sample, dumper_perimeter, clamp_perimeter, cable_perimeter, u"Perímetro", u"Feature Perímetro")
-    # plot.single_feature(dumper_sample, dumper_eccentricity, clamp_eccentricity, cable_eccentricity, "Ecentricidade", "Feature Ecentricidade")
+    # plot.single_feature(dumper_sample, dumper_eccentricity, clamp_eccentricity, cable_eccentricity, "Excentricidade", "Excentricidades das amostras analisadas")
 
 
     # plt.plot(cable_solidity, ls='-', c = 'teal', alpha = 0.8, linewidth = 2.0, linestyle='-', marker= 's', label="Cable") 
