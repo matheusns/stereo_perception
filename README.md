@@ -4,7 +4,12 @@
 The research aims to develop an obstacle recognition module to be used in a standalone robot for conducting visual inspection on transmission lines using a stereo camera as a data acquisition sensor. In this context, any element arranged in the transmission line that offers resistance to the passage of the robot is considered as an obstacle.</p>
 
 <p align="justify">
-The obstacles that will be taken into account during the development of the work and should be detected and classified by the module in question are suspension clamp, stockbridge dampers and jumper.</p>
+The obstacles that will be taken into account during the development of the work and should be detected and classified by the module in question are suspension clamps and stockbridge dampers.</p>
+
+| [![Clamp](https://github.com/matheusns/stereo_perception/blob/master/images/clamp.jpg)](Clamp)  | [![Damper](https://github.com/matheusns/stereo_perception/blob/master/images/damper.jpg)](Damper) |
+|:---:|:---:|
+| Suspension Clamp | Stockbridge damper|
+
 
 <p align="justify">
 The process of recognizing obstacles will be divided into two stages. The first step will be responsible for detecting the obstacles located ahead of the robot, through image processing and conventional methods of extraction of characteristics. The second stage should perform the classification of the obstacle, detected during the previous stage, as one of the three possible obstacles, which will aid in the decision making of the robot and its autonomy throughout the inspection process. For the classification will be approached the convolutional neural network and support vector machine methods.</p>
@@ -12,7 +17,7 @@ The process of recognizing obstacles will be divided into two stages. The first 
 <div align="center"><img src="https://github.com/matheusns/stereo_perception/blob/master/images/whole_process.png"></div> 
 
 <p align="center">
-    Image processing steps to detect a <a href="http://learn4electrical.altervista.org/what-is-dampers-and-its-types-used-in-transmission-lines/">stockbridge damper</a>.
+    Image processing steps to detect a stockbridge damper.
 </p>
 
 <p align="justify">
