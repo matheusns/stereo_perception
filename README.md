@@ -4,10 +4,16 @@
 The research aims to develop an obstacle recognition module to be used in a standalone robot for conducting visual inspection on transmission lines using a stereo camera as a data acquisition sensor. In this context, any element arranged in the transmission line that offers resistance to the passage of the robot is considered as an obstacle.</p>
 
 <p align="justify">
-The obstacles that will be taken into account during the development of the work and should be detected and classified by the module in question are suspension clamp, spacer damper and jumper.</p>
+The obstacles that will be taken into account during the development of the work and should be detected and classified by the module in question are suspension clamp, spacer dumper and jumper.</p>
 
 <p align="justify">
 The process of recognizing obstacles will be divided into two stages. The first step will be responsible for detecting the obstacles located ahead of the robot, through image processing and conventional methods of extraction of characteristics. The second stage should perform the classification of the obstacle, detected during the previous stage, as one of the three possible obstacles, which will aid in the decision making of the robot and its autonomy throughout the inspection process. For the classification will be approached the convolutional neural network and support vector machine methods.</p>
+
+<div align="center"><img src="https://github.com/matheusns/stereo_perception/blob/master/images/whole_process.png"></div> 
+
+<p align="center">
+    Image processing steps to detect a <a href="http://learn4electrical.altervista.org/what-is-dampers-and-its-types-used-in-transmission-lines/">damper</a>.
+</p>
 
 <p align="justify">
 The sensor that has been being used is the zed stereo camera that enables real-time high-resolution data acquisition and has some features, such as the depth map that reaches up to 20 meters, that might support future searches.</p>
@@ -18,17 +24,35 @@ The robotic framework used is Robot Operation System (ROS), Kinetic distribuitio
 # Contents
 
   * [Requirements](#Requirements)
-  * [Installation](#instala%C3%A7%C3%A3o)
-  * [Usage ](#uso)
-  * [Documentation](#documentação)
-  * [Contributiton](#contribuicoes)
   * [Credits](#creditos)
   * [License](#licenciamento)
-  * [Background IP](#background-ip)
-  * [Acknowledgments](#acknowledgments)
 
 # Requirements 
 
   * [Ubuntu 16.04 LTS (Xenial Xerus)](http://releases.ubuntu.com/16.04/) 
   * [Python 2.7](https://www.python.org/download/releases/2.7/) 
   * [ROS Kinetic](http://wiki.ros.org/kinetic)
+  * [OpenCV 3.3](https://github.com/opencv/opencv/releases/tag/3.3.0)
+  * [Scikit-learn](http://scikit-learn.org/stable/install.html)
+
+# Credits
+
+  * [Matheus Nascimento](https://github.com/matheusns)
+
+# License
+
+Copyright (c) 2018 Perception Stereo ELIR 
+<p align="justify"> 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. <p align="justify"> Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</p>
+
+3. <p align="justify">Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission. </p>
+
+More informations at [3-Clause BSD License](https://opensource.org/licenses/BSD-3-Clause).
+
+
+
+  
