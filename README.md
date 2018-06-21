@@ -38,6 +38,7 @@ The robotic framework used is Robot Operation System (ROS), Kinetic distribuitio
 # Credits
 
   * [Matheus Nascimento](https://github.com/matheusns)
+  * [Marco Reis](https://github.com/mhar-vell)
 
 # License
 
