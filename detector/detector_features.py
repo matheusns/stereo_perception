@@ -25,10 +25,6 @@ def findContours(src, rgb, new = False):
 
         for contour, hier in zip(contours, hierarchy):
             (x,y,w,h) = cv2.boundingRect(contour)
-            #print "object aspect ratio: " + str(float(w/float(h)))
-            #print "Width = "+str(w)+" Height = " +str(h)
-            #print "X = "+str(x)+" Y = " +str(y)
-            
             if h < 130 or w < 90:
                 continue
 
@@ -138,7 +134,7 @@ def img_fill(im_in):
     mask = np.zeros((h + 2, w + 2), np.uint8)
 
     # Floodfill from point (0, 0)
-    cv2.floodFill(im_floodfill, mask, (0, 0), 255);
+    cv2.floodFill(im_floodfill, mask, (0, 0), 255)
 
     # Invert floodfilled image
     im_floodfill_inv = cv2.bitwise_not(im_floodfill)

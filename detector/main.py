@@ -28,27 +28,22 @@ if __name__ == '__main__':
 
         if anottation == 'true' or anottation == 't' or anottation == 'T':
             anottation = True
-            print "#######################################################"
-            print "Annotation Mode"
-            print "#######################################################"
+
         elif anottation == 'false' or anottation == 'f' or anottation == 'F':
             anottation = False
 
         if segregation == 'true' or segregation == 't' or segregation == 'T':
             segregation = True
-            print "#######################################################"
-            print "Segregation Mode"
-            print "#######################################################"
+
         elif segregation == 'false' or segregation == 'f' or segregation == 'F':
             segregation = False
 
         if detector_evaluate == 'true' or detector_evaluate == 't' or detector_evaluate == 'T':
             detector_evaluate = True
-            print "#######################################################"
-            print "Detector evaluate Mode"
-            print "#######################################################"
+
         elif detector_evaluate == 'false' or detector_evaluate == 'f' or detector_evaluate == 'F':
             detector_evaluate = False
+
     except IndexError:
         print "Error while reading diretoctory path."
 
@@ -60,7 +55,6 @@ if __name__ == '__main__':
     area_vector_value = []
     sample = []
     cont_samples = 0
-    # cable dete
     detect_with = 0
     detect_without = 0
     not_detect_with = 0
@@ -81,39 +75,18 @@ if __name__ == '__main__':
         # Segregation Mode
         if segregation:
 
-        # Used to show images provided by the detector_features.extractor method
-
-            # cv2.namedWindow('Depth', cv2.WINDOW_NORMAL)
-
-        # When there is nothing to detect the method returns a roi equal None
-
-            # if roi == None:
-                # img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_BGR2GRAY)
-                # rgb_bounded = img_bounded 
-                # mat = cv2.cvtColor(mat, cv2.COLOR_BGR2GRAY)
-            # else:
-                # img_bounded = cv2.cvtColor(img_bounded, cv2.COLOR_GRAY2BGR)
-
-            # resized_image = cv2.resize(rgb_bounded, (640, 360))
-            # # resized_image = cv2.resize(img_bounded, (640, 360))
-            # resized_image_2 = cv2.resize(img_bounded, (640, 360))
-            # temp = np.vstack([np.hstack([resized_image_2, resized_image])])
-            # cv2.imshow('Depth', temp)
-            # key = cv2.waitKey(1)
-
             print "Key = " + str(key)
-
             if key == 27:
                 cv2.destroyAllWindows()
                 break
 
             elif key == 83 or key == 115:
                 detector_samples += 1
-                # grampo = clamp
+                # Clamp
                 if obstacle == "clamp":
                     cv2.imwrite("/home/matheus/Documents/tcc/"+"final_cable_"+ordered_files[j], without_cable)
                     cv2.imwrite("/home/matheus/Documents/tcc/"+"flood_"+ordered_files[j], flood)
-                # amortecedor = dumper
+                # Dumper
                 elif obstacle == "dumper":
                     cv2.imwrite("/home/matheus/Documents/dumper_knn/"+ordered_files[j], mat)
                 elif obstacle == "cable":
@@ -179,23 +152,14 @@ if __name__ == '__main__':
             if detector_samples == 500:
                 break
 
-            print ''
-            print "##################################################"
             print "Detected with = " + str(detect_with)
             print "Detected Without = " + str(detect_without)
             print "Not Detected with = " + str(not_detect_with)
             print "Not Detected Without = " + str(not_detect_without)
-            print "##################################################"
-            print ''
 
     if detector_evaluate:
-        print ''
-        print "##################################################"
-        print "################ FINAL ##############################"
         print "Detected with = " + str(detect_with)
         print "Detected Without = " + str(detect_without)
         print "Not Detected with = " + str(not_detect_with)
         print "Not Detected Without = " + str(not_detect_without)
-        print "##################################################"
-        print ''
     cv2.destroyAllWindows()

@@ -12,6 +12,5 @@ def preprocess(src, crop = True):
         image = image[200:750, 800:1500]
         test = test[200:750, 800:1500]
         without_close = image
-    # gradient = cv2.morphologyEx(image, cv2.MORPH_GRADIENT, kernel)
     gradient = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
     return gradient, without_close, test
